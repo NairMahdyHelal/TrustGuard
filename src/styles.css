@@ -1,0 +1,156 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: 0px;
+  --radius-md: 2px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-ink: var(--ink);
+
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --shadow-paper: 4px 4px 0px 0px rgb(28 25 23 / 0.05);
+  --shadow-paper-soft: 4px 4px 0px 0px rgb(28 25 23 / 0.02);
+}
+
+:root {
+  --radius: 0.25rem;
+
+  /* Institutional Ivory */
+  --background: oklch(0.972 0.005 80); /* #F9F8F6 */
+  --foreground: oklch(0.21 0.01 60); /* stone-900 */
+  --ink: oklch(0.21 0.01 60);
+
+  --surface: oklch(0.97 0.005 80);
+  --surface-elevated: oklch(1 0 0);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.01 60);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.01 60);
+
+  --primary: oklch(0.21 0.01 60); /* stone-900 (ink) */
+  --primary-foreground: oklch(0.98 0 0);
+
+  --secondary: oklch(0.93 0.006 80);
+  --secondary-foreground: oklch(0.21 0.01 60);
+
+  --muted: oklch(0.93 0.006 80);
+  --muted-foreground: oklch(0.45 0.01 60);
+
+  --accent: oklch(0.93 0.006 80);
+  --accent-foreground: oklch(0.21 0.01 60);
+
+  --success: oklch(0.55 0.13 155); /* emerald-700 */
+  --success-foreground: oklch(0.98 0 0);
+
+  --warning: oklch(0.62 0.13 60); /* amber-700 */
+  --warning-foreground: oklch(0.98 0 0);
+
+  --destructive: oklch(0.52 0.17 22); /* rose-700 */
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --border: oklch(0.87 0.005 70); /* stone-300 */
+  --input: oklch(0.92 0.005 80);
+  --ring: oklch(0.21 0.01 60);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html,
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif);
+    letter-spacing: -0.01em;
+    font-weight: 400;
+  }
+  .num,
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+  }
+}
+
+@utility paper {
+  background: var(--card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-paper);
+}
+
+@utility paper-soft {
+  background: color-mix(in oklab, var(--card) 60%, var(--background));
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-paper-soft);
+}
+
+@utility eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-muted-foreground);
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+@utility animate-pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@utility grid-bg {
+  background-image:
+    linear-gradient(to right, rgb(28 25 23 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(28 25 23 / 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
