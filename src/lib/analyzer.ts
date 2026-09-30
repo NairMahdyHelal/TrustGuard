@@ -166,33 +166,13 @@ function looksLikeCryptoWallet(s: string) {
 
 function analyzeWallet(addr: string) {
   if (!looksLikeCryptoWallet(addr)) return null;
-  // Mock heuristic from address chars
-  const hash = [...addr].reduce((a, c) => a + c.charCodeAt(0), 0);
-  const ageDays = hash % 400;
-  const scamReports = (hash * 7) % 9;
-  const mixer = hash % 11 === 0;
   let risk = 10;
   const reasons: string[] = [];
-  if (ageDays < 30) {
-    risk += 35;
-    reasons.push(`Wallet created ${ageDays} days ago`);
-  } else if (ageDays < 90) {
-    risk += 18;
-    reasons.push(`Wallet only ${ageDays} days old`);
-  }
-  if (scamReports >= 3) {
-    risk += 25;
-    reasons.push(`${scamReports} community scam reports`);
-  }
-  if (mixer) {
-    risk += 22;
-    reasons.push("Interacted with a known mixer service");
-  }
   if (addr.toLowerCase().includes("dead") || /(.)\1{5,}/.test(addr)) {
     risk += 15;
     reasons.push("Unusual address pattern");
   }
-  return { risk: Math.min(100, risk), ageDays, scamReports, mixer, reasons };
+  return { risk: Math.min(100, risk), reasons };
 }
 
 function analyzeWebsite(url: string) {
@@ -250,18 +230,7 @@ function analyzeWebsite(url: string) {
     risk += 12;
     reasons.push("No HTTPS in supplied URL");
   }
-  // Pseudo domain age
-  const hash = [...host].reduce((a, c) => a + c.charCodeAt(0), 0);
-  const ageDays = hash % 800;
-  if (ageDays < 30) {
-    risk += 25;
-    reasons.push(`Domain registered ${ageDays} days ago`);
-  } else if (ageDays < 120) {
-    risk += 12;
-    reasons.push(`Domain only ${ageDays} days old`);
-  }
-
-  return { risk: Math.min(100, risk), host, ageDays, reasons };
+  return { risk: Math.min(100, risk), host, reasons };
 }
 
 function analyzeBehaviour(input: AnalysisInput) {
@@ -367,15 +336,12 @@ export function analyze(input: AnalysisInput): AnalysisResult {
     layers.push({
       name: "Crypto Wallet",
       score: wallet.risk,
-      summary: `Age ~${wallet.ageDays}d · ${wallet.scamReports} reports${wallet.mixer ? " · mixer" : ""}`,
+      summary: "Address format and visible pattern checks only",
     });
     for (const r of wallet.reasons) {
       flags.push({
         layer: "Wallet",
-        severity:
-          r.toLowerCase().includes("mixer") || r.toLowerCase().includes("scam")
-            ? "high"
-            : "medium",
+        severity: "medium",
         title: r,
         detail: "",
       });
@@ -389,7 +355,7 @@ export function analyze(input: AnalysisInput): AnalysisResult {
     layers.push({
       name: "Website",
       score: site.risk,
-      summary: `${site.host} · ~${site.ageDays}d old`,
+      summary: `${site.host} · URL pattern checks only`,
     });
     for (const r of site.reasons) {
       flags.push({
@@ -490,16 +456,6 @@ export function analyze(input: AnalysisInput): AnalysisResult {
       risk: beh.risk,
     });
   }
-  if (wallet && (wallet.scamReports >= 3 || wallet.mixer)) {
-    nodes.push({
-      id: "scam",
-      label: "Known scam cluster",
-      type: "scam",
-      risk: 95,
-    });
-    edges.push({ from: "recipient", to: "scam", label: "linked", risk: 90 });
-  }
-
   // Explanation
   const topReasons = flags
     .sort((a, b) => sevRank(b.severity) - sevRank(a.severity))
@@ -508,7 +464,7 @@ export function analyze(input: AnalysisInput): AnalysisResult {
     .join("\n");
   const explanation =
     riskLevel === "Safe"
-      ? "No significant risk indicators were detected across language, behaviour, wallet, or website signals. The recipient appears consistent with a legitimate transaction profile."
+      ? "No significant risk indicators were detected in the supplied message, payment details, address pattern, or URL. No external wallet or domain reputation lookup was performed."
       : `This request shows characteristics typical of ${
           riskLevel === "Critical"
             ? "an active scam"
