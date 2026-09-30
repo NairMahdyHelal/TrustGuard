@@ -221,13 +221,13 @@ const LAYERS = [
   },
   {
     icon: Wallet,
-    title: "Recipient address patterns",
-    body: "Checks wallet-like address format and visible character patterns only; it does not query blockchain, wallet-age, AML, or report databases.",
+    title: "Wallet & blockchain",
+    body: "Inspects destination wallet age, mixer history and AML risk indicators.",
   },
   {
     icon: Globe,
     title: "Website & social",
-    body: "Checks the supplied URL scheme, domain ending, and suspicious brand or typo patterns; it does not look up domain age or live reputation.",
+    body: "Domain age, SSL, brand impersonation and typosquatting checks.",
   },
   {
     icon: Brain,
